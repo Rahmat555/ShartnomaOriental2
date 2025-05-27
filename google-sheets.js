@@ -5,9 +5,9 @@ const { google } = require('googleapis');
 async function appendToGoogleSheet(data) {
   try {
     const auth = new google.auth.GoogleAuth({
-      keyFile: path.join(__dirname, 'google-credentials.json'),
+      keyFile: process.env.GOOGLE_CREDENTIALS_PATH,
       scopes: ['https://www.googleapis.com/auth/spreadsheets']
-    });
+    });    
 
     const sheets = google.sheets({ version: 'v4', auth });
 
