@@ -72,7 +72,7 @@ app.post('/api/generate-pdf', async (req, res) => {
     const outputPath = path.join(__dirname, 'public', filename);
     fs.writeFileSync(outputPath, pdfBytes);
 
-    const fileUrl = `http://localhost:${PORT}/${filename}`;
+    const fileUrl = `${req.protocol}://${req.get('host')}/${filename}`;
 
 
     // 5. Отправляем ответ клиенту СРАЗУ
