@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="uz">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Talaba kontrakti yaratish</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f0fdf4;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+    }
+
+    .container {
+      background-color: #ffffff;
+      margin-top: 40px;
+      padding: 30px 40px;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 128, 0, 0.15);
+      max-width: 700px;
+      width: 100%;
+    }
+
+    h2 {
+      text-align: center;
+      color: #1e7f3c;
+      margin-bottom: 24px;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 600;
+      color: #1e4d2b;
+    }
+
+    input,
+    select {
+      width: 100%;
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #cce5cc;
+      transition: border-color 0.3s;
+    }
+
+    input:focus,
+    select:focus {
+      border-color: #2ecc71;
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(46, 204, 113, 0.2);
+    }
+
+    button {
+      background-color: #2ecc71;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 12px 20px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-right: 10px;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #27ae60;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    #contract-number,
+    #pdf-link {
+      margin-top: 16px;
+      font-weight: bold;
+      color: #1e4d2b;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h2>Talaba kontrakti yaratish</h2>
+
+    <div id="login">
+      <div class="form-group">
+        <label for="username">Login</label>
+        <input type="text" id="username">
+      </div>
+      <div class="form-group">
+        <label for="password">Parol</label>
+        <input type="password" id="password">
+      </div>
+      <button onclick="doLogin()">Kirish</button>
+    </div>
+
+    <div id="form-section" class="hidden">
+      <div class="form-group"><label>Ism Familiya Sharif</label><input id="name"></div>
+      <div class="form-group"><label>JSHSHIR</label><input id="jshshir"></div>
+      <div class="form-group"><label>Sana</label><input id="birthdate" type="date"></div>
+      <div class="form-group"><label>Ta'lim shakli</label>
+        <select id="educationType">
+          <option value="kunduzgi">Kunduzgi</option>
+          <option value="kechki">Kechki</option>
+          <option value="sirtqi">Sirtqi</option>
+          <option value="muqobil">Muqobil</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Ta'lim yo'nalishi</label>
+        <select id="direction"></select>
+      </div>
+      <div class="form-group"><label>Manzil</label><input id="address"></div>
+      <div class="form-group"><label>Pasport ma'lumotlari</label><input id="passport"></div>
+      <div class="form-group"><label>Telefon raqam</label><input id="phone"></div>
+
+      <button onclick="submitForm()">PDF-ni yuklab olish</button>
+      <button onclick="previewPDF()">PDF-ni ko‘rish (preview)</button>
+
+      <p id="pdf-link"></p>
+      <p id="contract-number"></p>
+      <div id="error-message" style="color: red; margin-top: 12px;"></div>
+    </div>
+  </div>
+
+  <script>
+    let currentUser = '';
+
+    const directions = [
+      "Filologiya va tillarni o'qitish: arab tili(Bakalavr)",
+      "Filologiya va tillarni o'qitish: ingliz tili(Bakalavr)",
+      "Filologiya va tillarni o'qitish: o'zbek tili(Bakalavr)",
+      "Filologiya va tillarni o'qitish: rus tili(Bakalavr)",
+      "Filologiya va tillarni o'qitish: xitoy tili(Bakalavr)",
+      "Filologiya va tillarni o'qitish: koreys tili(Bakalavr)",
+      "Filologiya va tillarni o'qitish: turk tili(Bakalavr)",
+      "Boshlang'ich ta'lim(Bakalavr)",
+      "Turizm va mehmondo'stlik(Bakalavr)",
+      "Iqtisodiyot(Bakalavr)",
+      "Tarix(Bakalavr)",
+      "Maktabgacha ta'lim(Bakalavr)",
+      "Jismoniy madaniyat(Bakalavr)",
+      "Ona tili va adabiyoti: rus tili(Bakalavr)",
+      "Ona tili va adabiyoti(Bakalavr)",
+      "Psixologiya(Bakalavr)",
+      "Pedagogika(Bakalavr)",
+      "Menejment(Bakalavr)",
+      "Moliya va moliyaviy texnologiyalar(Bakalavr)",
+      "Logistika(Bakalavr)",
+      "Buxgalteriya hisobi(Bakalavr)",
+      "Bank ishi(Bakalavr)",
+      "Dasturiy injiniring(Bakalavr)",
+      "Kompyuter injiniring(Bakalavr)",
+      "Matematika(Bakalavr)",
+      "Maxsus pedagogika: logopediya(Bakalavr)",
+      "Menejment(Magistratura)",
+      "Memejment: Ta'lim menekmenti(Magistratura)",
+      "Lingvistuka: arab tili(Magistratura)",
+      "Lingvistuka: inglis tili(Magistratura)",
+      "Iqtisodiyot(Magistratura)",
+      "Tarix(Magistratura)",
+      "Davlat moliyaviy nazorati va auditi(Magistratura)",
+      "Raqamli iqtisodiyot(Magistratura)",
+      "Dasturiy injiniring(Magistratura)",
+      "Kompyuter injiniring(Magistratura)",
+      "Sport faoliyati(Magistratura)",
+      "Ta'lim va tarbiya nazariyasi va metodikasi (Boshlang'ich ta'lim)(Magistratura)",
+      "Psixologiya(Magistratura)"
+    ];
+
+
+    directions.forEach(d => {
+      const opt = document.createElement('option');
+      opt.value = d;
+      opt.textContent = d;
+      document.getElementById('direction').appendChild(opt);
+    });
+
+    function doLogin() {
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      if (username === 'shartnoma0222' && password === '12345') {
+        currentUser = username;
+        localStorage.setItem('loggedUser', username); // сохраняем
+        document.getElementById('login').classList.add('hidden');
+        document.getElementById('form-section').classList.remove('hidden');
+      } else {
+        alert('Login yoki parol noto‘g‘ri');
+      }
+    }
+
+
+    function getFormData() {
+      return {
+        username: currentUser,
+        name: document.getElementById('name').value,
+        jshshir: document.getElementById('jshshir').value,
+        birthdate: document.getElementById('birthdate').value,
+        educationType: document.getElementById('educationType').value,
+        direction: document.getElementById('direction').value,
+        address: document.getElementById('address').value,
+        passport: document.getElementById('passport').value,
+        phone: document.getElementById('phone').value
+      };
+    }
+
+    async function submitForm() {
+      const data = { ...getFormData(), previewOnly: false };
+      try {
+        const res = await fetch('http://localhost:3000/api/generate-pdf', {
+          method: 'POST',
+          mode: 'cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+
+        const result = await res.json();
+        if (res.status === 400 && result.error) {
+          document.getElementById('error-message').textContent = result.error;
+          document.getElementById('pdf-link').textContent = '';
+          document.getElementById('contract-number').textContent = '';
+          return;
+        }
+
+        if (res.ok && result.downloadUrl) {
+          document.getElementById('error-message').textContent = '';
+          document.getElementById('pdf-link').innerHTML =
+            `<a href="${result.downloadUrl}" target="_blank">PDF-ni yuklab olish</a>`;
+          document.getElementById('contract-number').textContent =
+            `Shartnoma raqami: ${result.contractNumber}`;
+
+          // 🠊 Автоскачивание
+          const a = document.createElement('a');
+          a.href = result.downloadUrl;
+          a.download = `shartnoma_${result.contractNumber}.pdf`;
+          a.style.display = 'none';
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+        } else {
+          document.getElementById('pdf-link').textContent = 'Xatolik yuz berdi';
+        }
+
+      } catch (err) {
+        alert('Tarmoq xatosi yoki server ishlamayapti.');
+        console.error('Client-side fetch error:', err);
+      }
+    }
+
+
+    async function previewPDF() {
+      const data = { ...getFormData(), previewOnly: true };
+      try {
+        const res = await fetch('http://localhost:3000/api/generate-pdf', {
+          method: 'POST',
+          mode: 'cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+        const result = await res.json();
+        if (res.ok && result.previewUrl) {
+          window.open(result.previewUrl, '_blank');
+          document.getElementById('pdf-link').innerHTML = `<a href="${result.previewUrl}" target="_blank">PDF-ni yuklab olish</a>`;
+          document.getElementById('contract-number').textContent = `Shartnoma raqami: ${result.contractNumber}`;
+        } else {
+          document.getElementById('error-message').textContent = result.error || 'PDF ko‘rsatib boʻlmadi.';
+        }
+      } catch (err) {
+        alert('Tarmoq xatosi yoki server ishlamayapti.');
+        console.error('Client-side fetch error:', err);
+      }
+    }
+    window.onload = function () {
+      const savedUser = localStorage.getItem('loggedUser');
+      if (savedUser) {
+        currentUser = savedUser;
+        document.getElementById('login').classList.add('hidden');
+        document.getElementById('form-section').classList.remove('hidden');
+      }
+    };
+
+  </script>
+</body>
+
+</html>
