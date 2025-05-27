@@ -217,7 +217,7 @@
     async function submitForm() {
       const data = { ...getFormData(), previewOnly: false };
       try {
-        const res = await fetch('/api/generate-pdf', {
+        const res = await fetch('https://shartnomaoriental2-production.up.railway.app/api/generate-pdf', {
           method: 'POST',
           mode: 'cors',
           headers: { 'Content-Type': 'application/json' },
@@ -261,7 +261,7 @@
     async function previewPDF() {
       const data = { ...getFormData(), previewOnly: true };
       try {
-        const res = await fetch('/api/generate-pdf', {
+        const res = await fetch('https://shartnomaoriental2-production.up.railway.app//api/generate-pdf', {
           method: 'POST',
           mode: 'cors',
           headers: { 'Content-Type': 'application/json' },
