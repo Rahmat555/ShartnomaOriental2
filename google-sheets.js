@@ -1,6 +1,4 @@
-const fs = require('fs');
 require('dotenv').config();
-const path = require('path');
 const { google } = require('googleapis');
 
 async function appendToGoogleSheet(data) {
@@ -8,7 +6,7 @@ async function appendToGoogleSheet(data) {
     const auth = new google.auth.GoogleAuth({
       credentials: JSON.parse(process.env.GOOGLE_CREDENTIALS_JSON),
       scopes: ['https://www.googleapis.com/auth/spreadsheets']
-    });    
+    });
 
     const sheets = google.sheets({ version: 'v4', auth });
 
