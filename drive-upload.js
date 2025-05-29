@@ -7,7 +7,7 @@ const { PDFDocument } = require('pdf-lib');
 
 // Настройка Google Drive API
 const auth = new google.auth.GoogleAuth({
-  credentials: JSON.parse(fs.readFileSync('google-credentials.json', 'utf-8')),
+  credentials: JSON.parse(process.env.GOOGLE_CREDENTIALS_JSON),
   scopes: ['https://www.googleapis.com/auth/drive.file']
 });
 const drive = google.drive({ version: 'v3', auth });
