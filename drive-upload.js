@@ -7,7 +7,7 @@ const { PDFDocument } = require('pdf-lib');
 
 // Настройка Google Drive API
 const auth = new google.auth.GoogleAuth({
-  credentials: JSON.parse(process.env.GOOGLE_CREDENTIALS_JSON),
+  credentials: JSON.parse(fs.readFileSync('google-credentials.json', 'utf-8')),
   scopes: ['https://www.googleapis.com/auth/drive.file']
 });
 const drive = google.drive({ version: 'v3', auth });
@@ -54,12 +54,12 @@ async function uploadToDriveAndAddQR(localPath, contractNumber) {
     const qrDataUrl = await QRCode.toDataURL(driveUrl);
     const qrImageBytes = Buffer.from(qrDataUrl.split(',')[1], 'base64');
     const qrImage = await pdfDoc.embedPng(qrImageBytes);
-    const qrDims = qrImage.scale(0.3);
+    const qrDims = qrImage.scale(0.5);
 
     const lastPage = pdfDoc.getPages()[pdfDoc.getPageCount() - 1];
     lastPage.drawImage(qrImage, {
-      x: 50,
-      y: 100,
+      x: 410,
+      y: 56,
       width: qrDims.width,
       height: qrDims.height
     });
