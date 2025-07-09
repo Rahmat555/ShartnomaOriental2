@@ -70,6 +70,18 @@
   <div class="container">
     <h2>Talaba kontrakti yaratish</h2>
 
+    <div id="login">
+      <div class="form-group">
+        <label for="username">Login</label>
+        <input type="text" id="username">
+      </div>
+      <div class="form-group">
+        <label for="password">Parol</label>
+        <input type="password" id="password">
+      </div>
+      <button onclick="doLogin()">Kirish</button>
+    </div>
+
     <div class="form-group"><label>Ism Familiya Sharif</label><input id="name" /></div>
     <div class="form-group"><label>JSHSHIR</label><input id="jshshir" /></div>
     <div class="form-group"><label>Sana</label><input id="birthdate" type="date" /></div>
@@ -187,8 +199,26 @@
       }
     };
 
+    directions.forEach(d => {
+      const opt = document.createElement('option');
+      opt.value = d;
+      opt.textContent = d;
+      document.getElementById('direction').appendChild(opt);
+    });
 
-
+    function doLogin() {
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      if (username === 'shartnoma0222' && password === '12345') {
+        currentUser = username;
+        localStorage.setItem('loggedUser', username); // сохраняем
+        document.getElementById('login').classList.add('hidden');
+        document.getElementById('form-section').classList.remove('hidden');
+      } else {
+        alert('Login yoki parol noto‘g‘ri');
+      }
+    }
+    
 
     function populateDirections() {
       const type = document.getElementById('educationType').value;
