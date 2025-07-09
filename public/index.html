@@ -254,6 +254,7 @@
       const username = document.getElementById('username').value;
 
       return {
+        username: username,
         name: document.getElementById('name').value,
         jshshir: document.getElementById('jshshir').value,
         birthdate: document.getElementById('birthdate').value,
@@ -263,8 +264,7 @@
         passport: document.getElementById('passport').value,
         phone: document.getElementById('phone').value,
         contractAmount: amount,
-        course: course,
-        username: username
+        course: course
       };
     }
 
