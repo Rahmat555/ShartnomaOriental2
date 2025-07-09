@@ -68,8 +68,7 @@
 
 <body>
   <div class="container">
-    <h2>Talaba kontrakti yaratish</h2>
-
+    <!-- LOGIN FORM -->
     <div id="login">
       <div class="form-group">
         <label for="username">Login</label>
@@ -82,6 +81,7 @@
       <button onclick="doLogin()">Kirish</button>
     </div>
 
+    <!-- CONTRACT FORM -->
     <div class="form-group"><label>Ism Familiya Sharif</label><input id="name" /></div>
     <div class="form-group"><label>JSHSHIR</label><input id="jshshir" /></div>
     <div class="form-group"><label>Sana</label><input id="birthdate" type="date" /></div>
@@ -117,7 +117,7 @@
     <button id="download-btn">PDF-ni yuklab olish</button>
 
     <p id="contract-amount"></p>
-    <p id="status-msg" style="color: red;"></p>
+    <p id="status-message" style="color: red;"></p>
   </div>
 
   <script>
@@ -178,7 +178,7 @@
         "Maktabgacha ta'lim(Bakalavr)": 9600000,
         "Jismoniy madaniyat(Bakalavr)": 9600000,
         "Ona tili va adabiyoti: rus tili(Bakalavr)": 10400000,
-        "Ona tili va adabiyoti(Bakalavr)": 10400000,
+        "Ona tili va adabiyoti(Bakalavr)": 10400000
       },
       Sirtqi: {
         "Boshlang'ich ta'lim(Bakalavr)": 13600000,
@@ -195,30 +195,33 @@
         "Buxgalteriya hisobi(Bakalavr)": 11200000,
         "Bank ishi(Bakalavr)": 11200000,
         "Dasturiy injiniring(Bakalavr)": 11200000,
-        "Kompyuter injiniring(Bakalavr)": 11200000,
+        "Kompyuter injiniring(Bakalavr)": 11200000
       }
     };
 
-    directions.forEach(d => {
-      const opt = document.createElement('option');
-      opt.value = d;
-      opt.textContent = d;
-      document.getElementById('direction').appendChild(opt);
-    });
+    const validUsers = [
+      { username: 'admin', password: '12345' },
+      { username: 'operator_bux', password: '67890' },
+      { username: 'operator_2', password: '84593' }
+    ];
 
     function doLogin() {
-      const username = document.getElementById('username').value;
-      const password = document.getElementById('password').value;
-      if (username === 'shartnoma0222' && password === '12345') {
-        currentUser = username;
-        localStorage.setItem('loggedUser', username); // сохраняем
-        document.getElementById('login').classList.add('hidden');
-        document.getElementById('form-section').classList.remove('hidden');
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value.trim();
+
+      const user = validUsers.find(u => u.username === username && u.password === password);
+
+      if (user) {
+        // Hide login, show form
+        document.getElementById('login').style.display = 'none';
+        const container = document.querySelector('.container');
+        Array.from(container.children).forEach(el => {
+          if (el.id !== 'login') el.style.display = 'block';
+        });
       } else {
-        alert('Login yoki parol noto‘g‘ri');
+        alert("Login yoki parol noto‘g‘ri.");
       }
     }
-    
 
     function populateDirections() {
       const type = document.getElementById('educationType').value;
@@ -243,9 +246,6 @@
         amount ? `Kontrakt summasi: ${amount.toLocaleString()} so‘m` : '';
     }
 
-    document.getElementById('educationType').addEventListener('change', populateDirections);
-    document.getElementById('direction').addEventListener('change', updateAmountDisplay);
-
     function getFormData() {
       const type = document.getElementById('educationType').value;
       const dir = document.getElementById('direction').value;
@@ -266,7 +266,6 @@
       };
     }
 
-
     async function startPDFGeneration() {
       const data = getFormData();
       const statusEl = document.getElementById('status-message');
@@ -283,7 +282,7 @@
         const result = await res.json();
 
         if (res.ok && result.downloadUrl) {
-          popup.location.href = result.downloadUrl; // PDF ni ochish yoki yuklab olish
+          popup.location.href = result.downloadUrl;
           statusEl.textContent = 'Shartnoma tayyorlandi va yuklab olinmoqda.';
         } else {
           popup.document.body.innerHTML = `<p style="color:red;">Xatolik: ${result.error || 'PDF yaratib bo‘lmadi.'}</p>`;
@@ -294,8 +293,14 @@
       }
     }
 
-
-    window.onload = populateDirections;
+    // On page load
+    window.onload = () => {
+      populateDirections();
+      const container = document.querySelector('.container');
+      Array.from(container.children).forEach(el => {
+        if (el.id !== 'login') el.style.display = 'none';
+      });
+    };
   </script>
 </body>
 
