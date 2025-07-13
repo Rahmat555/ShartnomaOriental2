@@ -296,12 +296,7 @@
     }
 
     // On page load
-    window.onload = () => {
-      populateDirections();
-      const container = document.querySelector('.container');
-      Array.from(container.children).forEach(el => {
-        if (el.id !== 'login') el.style.display = 'none';
-      });
+    window.onload = populateDirections;
     };
   </script>
 </body>
