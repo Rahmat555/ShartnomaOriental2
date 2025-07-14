@@ -18,7 +18,7 @@ app.use(express.static('public'));
 
 app.post('/api/generate-pdf', async (req, res) => {
   const {
-    username, name, jshshir, birthdate,
+    operator, name, jshshir, birthdate,
     educationType, direction, address,
     passport, phone, contractAmount, course
   } = req.body;
