@@ -68,20 +68,17 @@
 
 <body>
   <div class="container">
-    <!-- LOGIN FORM -->
-    <div id="login">
-      <div class="form-group">
-        <label for="username">Login</label>
-        <input type="text" id="username">
-      </div>
-      <div class="form-group">
-        <label for="password">Parol</label>
-        <input type="password" id="password">
-      </div>
-      <button onclick="doLogin()">Kirish</button>
+    <h2>Talaba kontrakti yaratish</h2>
+
+    <div class="form-group">
+      <label for="operator">Operator</label>
+      <select id="operator">
+        <option value="operator_1">Operator 1</option>
+        <option value="operator_2">Operator 2</option>
+      </select>
     </div>
 
-    <!-- CONTRACT FORM -->
+    
     <div class="form-group"><label>Ism Familiya Sharif</label><input id="name" /></div>
     <div class="form-group"><label>JSHSHIR</label><input id="jshshir" /></div>
     <div class="form-group"><label>Sana</label><input id="birthdate" type="date" /></div>
@@ -117,7 +114,7 @@
     <button id="download-btn">PDF-ni yuklab olish</button>
 
     <p id="contract-amount"></p>
-    <p id="status-message" style="color: red;"></p>
+    <p id="status-msg" style="color: red;"></p>
   </div>
 
   <script>
@@ -178,7 +175,7 @@
         "Maktabgacha ta'lim(Bakalavr)": 9600000,
         "Jismoniy madaniyat(Bakalavr)": 9600000,
         "Ona tili va adabiyoti: rus tili(Bakalavr)": 10400000,
-        "Ona tili va adabiyoti(Bakalavr)": 10400000
+        "Ona tili va adabiyoti(Bakalavr)": 10400000,
       },
       Sirtqi: {
         "Boshlang'ich ta'lim(Bakalavr)": 13600000,
@@ -195,34 +192,11 @@
         "Buxgalteriya hisobi(Bakalavr)": 11200000,
         "Bank ishi(Bakalavr)": 11200000,
         "Dasturiy injiniring(Bakalavr)": 11200000,
-        "Kompyuter injiniring(Bakalavr)": 11200000
+        "Kompyuter injiniring(Bakalavr)": 11200000,
       }
     };
 
-    const validUsers = [
-      { username: 'admin', password: '12345' },
-      { username: 'operator_bux', password: '67890' },
-      { username: 'operator_2', password: '84593' }
-    ];
-
-    function doLogin() {
-      const username = document.getElementById('username').value.trim();
-      const password = document.getElementById('password').value.trim();
-
-      const user = validUsers.find(u => u.username === username && u.password === password);
-
-      if (user) {
-        // Hide login, show form
-        document.getElementById('login').style.display = 'none';
-        const container = document.querySelector('.container');
-        Array.from(container.children).forEach(el => {
-          if (el.id !== 'login') el.style.display = 'block';
-        });
-      } else {
-        alert("Login yoki parol noto‘g‘ri.");
-      }
-    }
-
+    
     function populateDirections() {
       const type = document.getElementById('educationType').value;
       const dirSelect = document.getElementById('direction');
@@ -243,18 +217,20 @@
       const dir = document.getElementById('direction').value;
       const amount = contractPrices[type]?.[dir];
       document.getElementById('contract-amount').textContent =
-        amount ? `Kontrakt summasi: ${amount.toLocaleString()} so‘m` : '';
+        amount ? Kontrakt summasi: ${amount.toLocaleString()} so‘m : '';
     }
+
+    document.getElementById('educationType').addEventListener('change', populateDirections);
+    document.getElementById('direction').addEventListener('change', updateAmountDisplay);
 
     function getFormData() {
       const type = document.getElementById('educationType').value;
       const dir = document.getElementById('direction').value;
       const amount = contractPrices[type]?.[dir] || 0;
       const course = document.getElementById('course').value;
-      const username = document.getElementById('username').value;
+      const operator = document.getElementById('operator').value;
 
       return {
-        username: username,
         name: document.getElementById('name').value,
         jshshir: document.getElementById('jshshir').value,
         birthdate: document.getElementById('birthdate').value,
@@ -264,9 +240,12 @@
         passport: document.getElementById('passport').value,
         phone: document.getElementById('phone').value,
         contractAmount: amount,
-        course: course
+        course: course,
+        operator: operator
       };
     }
+
+
 
     async function startPDFGeneration() {
       const data = getFormData();
@@ -284,20 +263,19 @@
         const result = await res.json();
 
         if (res.ok && result.downloadUrl) {
-          popup.location.href = result.downloadUrl;
+          popup.location.href = result.downloadUrl; // PDF ni ochish yoki yuklab olish
           statusEl.textContent = 'Shartnoma tayyorlandi va yuklab olinmoqda.';
         } else {
-          popup.document.body.innerHTML = `<p style="color:red;">Xatolik: ${result.error || 'PDF yaratib bo‘lmadi.'}</p>`;
+          popup.document.body.innerHTML = <p style="color:red;">Xatolik: ${result.error || 'PDF yaratib bo‘lmadi.'}</p>;
         }
       } catch (err) {
         console.error(err);
-        popup.document.body.innerHTML = `<p style="color:red;">Tarmoq xatosi yoki server ishlamayapti.</p>`;
+        popup.document.body.innerHTML = <p style="color:red;">Tarmoq xatosi yoki server ishlamayapti.</p>;
       }
     }
 
-    // On page load
+
     window.onload = populateDirections;
-    };
   </script>
 </body>
 
