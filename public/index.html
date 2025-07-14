@@ -246,12 +246,12 @@
 
         async function startPDFGeneration() {
             const data = getFormData();
-            const statusEl = document.getElementById('status-message');
+            const statusEl = document.getElementById('status-msg');
             const popup = window.open('', '_blank');
             popup.document.write('<p style="font-family: sans-serif; color: green;">PDF fayli tayyorlanmoqda, iltimos kuting...</p>');
 
             try {
-                const res = await fetch('https://shartnomaoriental2-production.up.railway.app/api/generate-pdf', {
+                const res = await fetch('https://shartnomaoriental2-production.up.railway.app/api/server', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(data)
@@ -272,7 +272,10 @@
         }
 
 
-        window.onload = populateDirections;
+        window.onload = () => {
+          populateDirections();
+        };
+
     </script>
 </body>
 
