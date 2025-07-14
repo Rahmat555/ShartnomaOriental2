@@ -16,7 +16,7 @@ async function appendToGoogleSheet(data) {
       valueInputOption: 'USER_ENTERED',
       requestBody: {
         values: [[
-          data.contractNumber, data.username, data.name, data.jshshir,
+          data.contractNumber, data.operator, data.name, data.jshshir,
           data.birthdate, data.educationType, data.direction,
           data.address, data.passport, data.phone, data.date
         ]]
