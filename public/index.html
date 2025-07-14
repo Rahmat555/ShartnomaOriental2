@@ -214,7 +214,7 @@
             const dir = document.getElementById('direction').value;
             const amount = contractPrices[type]?.[dir];
             document.getElementById('contract-amount').textContent =
-                amount ? "Kontrakt summasi: ${amount.toLocaleString()} so‘m" : '';
+                amount ? `Kontrakt summasi: ${amount.toLocaleString()} so‘m` : '';
         }
 
         document.getElementById('educationType').addEventListener('change', populateDirections);
@@ -270,12 +270,7 @@
                 popup.document.body.innerHTML = <p style="color:red;">Tarmoq xatosi yoki server ishlamayapti.</p>;
             }
         }
-
-
-        window.onload = () => {
-          populateDirections();
-        };
-
+        window.onload = populateDirections;
     </script>
 </body>
 
