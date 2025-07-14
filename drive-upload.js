@@ -5,7 +5,9 @@ const QRCode = require('qrcode');
 const { PDFDocument } = require('pdf-lib');
 
 const auth = new google.auth.GoogleAuth({
-  keyFile: 'credentials.json', // путь к твоему JSON-файлу сервисного аккаунта
+  credentials: process.env.GOOGLE_CREDENTIALS_JSON
+    ? JSON.parse(process.env.GOOGLE_CREDENTIALS_JSON)
+    : require('./credentials.json'),
   scopes: ['https://www.googleapis.com/auth/drive']
 });
 
