@@ -69,15 +69,6 @@
 <body>
   <div class="container">
     <h2>Talaba kontrakti yaratish</h2>
-
-    <div class="form-group">
-      <label for="operator">Operator</label>
-      <select id="operator">
-        <option value="operator_1">Operator 1</option>
-        <option value="operator_2">Operator 2</option>
-      </select>
-    </div>
-
     
     <div class="form-group"><label>Ism Familiya Sharif</label><input id="name" /></div>
     <div class="form-group"><label>JSHSHIR</label><input id="jshshir" /></div>
@@ -228,7 +219,6 @@
       const dir = document.getElementById('direction').value;
       const amount = contractPrices[type]?.[dir] || 0;
       const course = document.getElementById('course').value;
-      const operator = document.getElementById('operator').value;
 
       return {
         name: document.getElementById('name').value,
@@ -240,11 +230,9 @@
         passport: document.getElementById('passport').value,
         phone: document.getElementById('phone').value,
         contractAmount: amount,
-        course: course,
-        operator: operator
+        course: course
       };
     }
-
 
 
     async function startPDFGeneration() {
