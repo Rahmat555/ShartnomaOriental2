@@ -115,7 +115,7 @@ app.post('/api/generate-pdf', async (req, res) => {
       phone,
       date: formattedDate,
       contractAmount,
-      course,
+      course
     });
 
 
