@@ -172,7 +172,7 @@
         "Maktabgacha ta'lim(Bakalavr)": 9600000,
         "Jismoniy madaniyat(Bakalavr)": 9600000,
         "Ona tili va adabiyoti: rus tili(Bakalavr)": 10400000,
-        "Ona tili va adabiyoti(Bakalavr)": 10400000,
+        "Ona tili va adabiyoti(Bakalavr)": 10400000
       },
       Sirtqi: {
         "Boshlang'ich ta'lim(Bakalavr)": 13600000,
@@ -189,7 +189,7 @@
         "Buxgalteriya hisobi(Bakalavr)": 11200000,
         "Bank ishi(Bakalavr)": 11200000,
         "Dasturiy injiniring(Bakalavr)": 11200000,
-        "Kompyuter injiniring(Bakalavr)": 11200000,
+        "Kompyuter injiniring(Bakalavr)": 11200000
       }
     };
 
@@ -214,19 +214,19 @@
       const dir = document.getElementById('direction').value;
       const amount = contractPrices[type]?.[dir];
       document.getElementById('contract-amount').textContent =
-  	amount ? `Kontrakt summasi: ${amount.toLocaleString()} so‘m` : '';
+  	amount ? "Kontrakt summasi: ${amount.toLocaleString()} so‘m" : '';
     }
 
     document.getElementById('educationType').addEventListener('change', populateDirections);
     document.getElementById('direction').addEventListener('change', updateAmountDisplay);
 
     function getFormData() {
+      const operator = document.getElementById('operator').value;    
       const type = document.getElementById('educationType').value;
       const dir = document.getElementById('direction').value;
       const amount = contractPrices[type]?.[dir] || 0;
       const course = document.getElementById('course').value;
-      const operator = document.getElementById('operator').value;
-
+	
       return {
 	operator: operator,
         name: document.getElementById('name').value,
