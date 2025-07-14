@@ -213,8 +213,7 @@
       const type = document.getElementById('educationType').value;
       const dir = document.getElementById('direction').value;
       const amount = contractPrices[type]?.[dir];
-      document.getElementById('contract-amount').textContent =
-        amount ? Kontrakt summasi: ${amount.toLocaleString()} so‘m : '';
+      document.getElementById('contract-amount').textContent = amount ? Kontrakt summasi: ${amount.toLocaleString()} so‘m : '';
     }
 
     document.getElementById('educationType').addEventListener('change', populateDirections);
