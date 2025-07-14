@@ -227,6 +227,7 @@
       const operator = document.getElementById('operator').value;
 
       return {
+				operator: operator,
         name: document.getElementById('name').value,
         jshshir: document.getElementById('jshshir').value,
         birthdate: document.getElementById('birthdate').value,
@@ -236,10 +237,9 @@
         passport: document.getElementById('passport').value,
         phone: document.getElementById('phone').value,
         contractAmount: amount,
-        course: course,
-        operator: operator
-        };
-      }
+        course: course
+      };
+    }
 
 
 
