@@ -7,7 +7,7 @@ const { PDFDocument } = require('pdf-lib');
 const auth = new google.auth.GoogleAuth({
   credentials: process.env.GOOGLE_CREDENTIALS_JSON
     ? JSON.parse(process.env.GOOGLE_CREDENTIALS_JSON)
-    : require('./credentials.json'),
+    : require('./google-credentials.json'),
   scopes: ['https://www.googleapis.com/auth/drive']
 });
 
