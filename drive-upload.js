@@ -1,79 +1,80 @@
-require('dotenv').config();
 const fs = require('fs');
-const path = require('path');
 const { google } = require('googleapis');
+const path = require('path');
 const QRCode = require('qrcode');
 const { PDFDocument } = require('pdf-lib');
+const { authorize } = require('./auth');
 
-// ✅ Настройка Google Drive API для Shared Drive
-const auth = new google.auth.GoogleAuth({
-  credentials: JSON.parse(process.env.GOOGLE_CREDENTIALS_JSON),
-  scopes: ['https://www.googleapis.com/auth/drive']
-});
-const drive = google.drive({ version: 'v3', auth });
+const SCOPES = ['https://www.googleapis.com/auth/drive.file'];
+const CREDENTIALS_PATH = 'oauth-credentials.json';
 
-/**
- * Загружает PDF на Google Drive, добавляет QR-код и возвращает публичную ссылку.
- */
 async function uploadToDriveAndAddQR(localPath, contractNumber) {
   try {
-    const pdfBytes = fs.readFileSync(localPath);
-    const pdfDoc = await PDFDocument.load(pdfBytes);
+    const credentials = JSON.parse(fs.readFileSync(CREDENTIALS_PATH));
 
-    // 🧪 Временная загрузка файла
-    const tmpDriveRes = await drive.files.create({
-      requestBody: {
-        name: `shartnoma_${contractNumber}.pdf`,
-        mimeType: 'application/pdf',
-        parents: [process.env.DRIVE_FOLDER_ID] // ✅ Shared Drive папка
-      },
-      media: {
-        mimeType: 'application/pdf',
-        body: fs.createReadStream(localPath)
-      },
-      supportsAllDrives: true // ✅ Важно для shared drive
+    return new Promise((resolve, reject) => {
+      authorize(credentials, SCOPES, async (auth) => {
+        const drive = google.drive({ version: 'v3', auth });
+
+        const pdfBytes = fs.readFileSync(localPath);
+        const pdfDoc = await PDFDocument.load(pdfBytes);
+
+        // Загружаем файл
+        const tmpDriveRes = await drive.files.create({
+          requestBody: {
+            name: `shartnoma_${contractNumber}.pdf`,
+            mimeType: 'application/pdf'
+          },
+          media: {
+            mimeType: 'application/pdf',
+            body: fs.createReadStream(localPath)
+          }
+        });
+
+        const fileId = tmpDriveRes.data.id;
+
+        // Делаем файл публичным
+        await drive.permissions.create({
+          fileId,
+          requestBody: {
+            role: 'reader',
+            type: 'anyone'
+          }
+        });
+
+        const driveUrl = `https://drive.google.com/file/d/${fileId}/view`;
+
+        // Генерируем QR по URL
+        const qrDataUrl = await QRCode.toDataURL(driveUrl);
+        const qrImageBytes = Buffer.from(qrDataUrl.split(',')[1], 'base64');
+        const qrImage = await pdfDoc.embedPng(qrImageBytes);
+        const qrDims = qrImage.scale(0.5);
+
+        const lastPage = pdfDoc.getPages()[pdfDoc.getPageCount() - 1];
+        lastPage.drawImage(qrImage, {
+          x: 410,
+          y: 56,
+          width: qrDims.width,
+          height: qrDims.height
+        });
+
+        // Перезаписываем файл
+        const updatedPdfBytes = await pdfDoc.save();
+        fs.writeFileSync(localPath, updatedPdfBytes);
+
+        // Обновляем файл на диске
+        await drive.files.update({
+          fileId,
+          media: {
+            mimeType: 'application/pdf',
+            body: fs.createReadStream(localPath)
+          }
+        });
+
+        console.log('✅ Загружено с QR:', driveUrl);
+        resolve(driveUrl);
+      });
     });
-
-    const fileId = tmpDriveRes.data.id;
-
-    // 🔓 Делаем публичным
-    await drive.permissions.create({
-      fileId,
-      requestBody: { role: 'reader', type: 'anyone' },
-      supportsAllDrives: true
-    });
-
-    const driveUrl = `https://drive.google.com/file/d/${fileId}/view`;
-
-    // 🧾 Генерация QR
-    const qrDataUrl = await QRCode.toDataURL(driveUrl);
-    const qrImageBytes = Buffer.from(qrDataUrl.split(',')[1], 'base64');
-    const qrImage = await pdfDoc.embedPng(qrImageBytes);
-    const qrDims = qrImage.scale(0.5);
-    const lastPage = pdfDoc.getPages().at(-1);
-
-    lastPage.drawImage(qrImage, {
-      x: 410,
-      y: 56,
-      width: qrDims.width,
-      height: qrDims.height
-    });
-
-    const updatedPdfBytes = await pdfDoc.save();
-    fs.writeFileSync(localPath, updatedPdfBytes);
-
-    // 🔁 Перезапись в Drive
-    await drive.files.update({
-      fileId,
-      media: {
-        mimeType: 'application/pdf',
-        body: fs.createReadStream(localPath)
-      },
-      supportsAllDrives: true
-    });
-
-    console.log('✅ Загружено с QR:', driveUrl);
-    return driveUrl;
 
   } catch (err) {
     console.error('❌ Drive yoki QR xatolik:', err.message);
